@@ -346,7 +346,7 @@ def config_startup(on):
 
 
 config = read_config()
-config_startup(config["start_at_startup"][0])  # only for deployed app
+# config_startup(config["start_at_startup"][0])  # only for deployed app
 
 
 # stray configuration
@@ -490,7 +490,7 @@ def setting_section():
     shortcut_to_function = read_shortcut_from_config()
 
     # only for deployed app
-    config_startup(on=config["start_at_startup"][0])
+    # config_startup(on=config["start_at_startup"][0])
 
     setting_is_activating = False
 
