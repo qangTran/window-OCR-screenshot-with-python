@@ -1,4 +1,4 @@
-demo# Window OCR screenshort Tool 
+# Window OCR screenshort Tool 
 A tool for cut image from screenshot with an interface.
 A mini project for learning Python 🤗
 
