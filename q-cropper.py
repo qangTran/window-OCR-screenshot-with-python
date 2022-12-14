@@ -13,10 +13,20 @@ from win32com.client import Dispatch
 
 from utils import process_text, process_image
 
+
+# Set up config
+def read_config():
+    # ---- (read option from file) ---
+    with open(f'{ROOT_PATH}/data/setup/setup.json', 'r', encoding='utf-8') as file:
+        config_ = json.load(file)
+    return config_
+
+
 ROOT_PATH = os.path.realpath(os.path.dirname(__file__))
 USER_NAME = getpass.getuser()
-setting_is_activating = False
 toaster = ToastNotifier()
+setting_is_activating = False
+config = read_config()
 
 
 class SettingWindow:
@@ -26,7 +36,7 @@ class SettingWindow:
 
         self.main_window = tk.Tk() if master is None else tk.Toplevel(master)
         self.main_window.focus_force()
-        self.main_window.title("Settings")
+        self.main_window.title("Q-cropper")
         self.main_window.configure(background="#f5f6fa")
         self.main_window.geometry("640x390+500+300")
         self.main_window['padx'] = self.main_window_padding_size
@@ -40,16 +50,16 @@ class SettingWindow:
         self.main_window.columnconfigure(0, weight=1)
 
         # tk_Var
-        self.text_shortcut1 = tk.StringVar()
-        self.text_shortcut2 = tk.StringVar()
+        self.label_combination_shortcut1 = tk.StringVar()
+        self.label_combination_shortcut2 = tk.StringVar()
         self.checkbutton_use_shortcut1 = tk.IntVar()
         self.checkbutton_use_shortcut2 = tk.IntVar()
         self.method1_to_process_shortcut1 = tk.StringVar()
         self.method2_to_process_shortcut1 = tk.StringVar()
         self.method1_to_process_shortcut2 = tk.StringVar()
         self.method2_to_process_shortcut2 = tk.StringVar()
-        self.text_button1_mode = tk.StringVar(value="Record")
-        self.text_button2_mode = tk.StringVar(value="Record")
+        self.button_record_mode_shortcut1 = tk.StringVar(value="Record")
+        self.button_record_mode_shortcut2 = tk.StringVar(value="Record")
         self.in_read_shortcut1_mode = False
         self.in_read_shortcut2_mode = False
         self.checkbutton_start_with_window = tk.IntVar()
@@ -60,20 +70,20 @@ class SettingWindow:
         def key_down(key):
             if self.in_read_shortcut1_mode:
                 string_key = convert_vk_tkinter_to_string(key)
-                if string_key in self.text_shortcut1.get().split(" + "):
+                if string_key in self.label_combination_shortcut1.get().split(" + "):
                     return
-                elif len(self.text_shortcut1.get()) == 0:
-                    self.text_shortcut1.set(convert_vk_tkinter_to_string(key))
+                elif len(self.label_combination_shortcut1.get()) == 0:
+                    self.label_combination_shortcut1.set(convert_vk_tkinter_to_string(key))
                 else:
-                    self.text_shortcut1.set(self.text_shortcut1.get() + " + " + string_key)
+                    self.label_combination_shortcut1.set(self.label_combination_shortcut1.get() + " + " + string_key)
             if self.in_read_shortcut2_mode:
                 string_key = convert_vk_tkinter_to_string(key)
-                if string_key in self.text_shortcut2.get().split(" + "):
+                if string_key in self.label_combination_shortcut2.get().split(" + "):
                     return
-                elif len(self.text_shortcut2.get()) == 0:
-                    self.text_shortcut2.set(convert_vk_tkinter_to_string(key))
+                elif len(self.label_combination_shortcut2.get()) == 0:
+                    self.label_combination_shortcut2.set(convert_vk_tkinter_to_string(key))
                 else:
-                    self.text_shortcut2.set(self.text_shortcut2.get() + " + " + string_key)
+                    self.label_combination_shortcut2.set(self.label_combination_shortcut2.get() + " + " + string_key)
 
         self.main_window.bind("<KeyPress>", key_down)
 
@@ -98,22 +108,22 @@ class SettingWindow:
         # Record shortcut 1
 
         # Check button use shortcut1
-        def ShortCut_1_Hover_Effect_Come(_):
+        def Checkbutton_Use_ShortCut_1_Hover_Effect_Come(_):
             self.ShortCut_1.config(selectcolor="#d2dae2")
 
-        def ShortCut_1_Hover_Effect_Leave(_):
+        def Checkbutton_Use_ShortCut_1_Hover_Effect_Leave(_):
             self.ShortCut_1.config(selectcolor="SystemButtonFace")
 
         self.ShortCut_1 = tk.Checkbutton(self.Shortcut_Frame, variable=self.checkbutton_use_shortcut1, onvalue=1,
                                          offvalue=0)
         self.ShortCut_1.configure(background="#f5f6fa", text='Shortcut 1', font="{g} 11 ", )
         self.ShortCut_1.grid(column=0, row=0, sticky="snew")
-        self.ShortCut_1.bind("<Enter>", ShortCut_1_Hover_Effect_Come)
-        self.ShortCut_1.bind("<Leave>", ShortCut_1_Hover_Effect_Leave)
+        self.ShortCut_1.bind("<Enter>", Checkbutton_Use_ShortCut_1_Hover_Effect_Come)
+        self.ShortCut_1.bind("<Leave>", Checkbutton_Use_ShortCut_1_Hover_Effect_Leave)
 
         # Label shortcut2
         self.ShortCut_Place_1 = tk.Label(self.Shortcut_Frame, borderwidth=1, relief="solid",
-                                         textvariable=self.text_shortcut1)
+                                         textvariable=self.label_combination_shortcut1)
         self.ShortCut_Place_1.configure(
             background="#ffffff", state="normal", width=26)
         self.ShortCut_Place_1.grid(column=1, padx=2, row=0, sticky="ew")
@@ -121,11 +131,11 @@ class SettingWindow:
         # Button Record ShortCut1
         def cmd_Record_ShortCut_1():
             if not self.in_read_shortcut1_mode:
-                self.text_shortcut1.set("")
-                self.text_button1_mode.set("Done")
+                self.label_combination_shortcut1.set("")
+                self.button_record_mode_shortcut1.set("Done")
                 self.in_read_shortcut1_mode = True
             else:
-                self.text_button1_mode.set("Record")
+                self.button_record_mode_shortcut1.set("Record")
                 self.in_read_shortcut1_mode = False
 
         def Record_ShortCut_1_Hover_Effect_Come(_):
@@ -134,7 +144,7 @@ class SettingWindow:
         def Record_ShortCut_1_Hover_Effect_Leave(_):
             self.Record_ShortCut_1["bg"] = "#ecf0f1"
 
-        self.Record_ShortCut_1 = tk.Button(self.Shortcut_Frame, textvariable=self.text_button1_mode)
+        self.Record_ShortCut_1 = tk.Button(self.Shortcut_Frame, textvariable=self.button_record_mode_shortcut1)
         self.Record_ShortCut_1.configure(background="#ecf0f1", default="active", font="{g} 10 ",
                                          command=cmd_Record_ShortCut_1, width=8)
         self.Record_ShortCut_1.grid(column=2, padx=5, pady=5, row=0, sticky="ew")
@@ -155,22 +165,22 @@ class SettingWindow:
         # Record ShortCut 2
 
         # Check button shortcut 2
-        def ShortCut_2_Hover_Effect_Come(_):
+        def Checkbutton_Use_ShortCut_2_Hover_Effect_Come(_):
             self.ShortCut_2.config(selectcolor="#d2dae2")
 
-        def ShortCut_2_Hover_Effect_Leave(_):
+        def Checkbutton_Use_ShortCut_2_Hover_Effect_Leave(_):
             self.ShortCut_2.config(selectcolor="SystemButtonFace")
 
         self.ShortCut_2 = tk.Checkbutton(self.Shortcut_Frame, variable=self.checkbutton_use_shortcut2, onvalue=1,
                                          offvalue=0)
         self.ShortCut_2.configure(background="#f5f6fa", text='Shortcut 2', font="{g} 11 ")
         self.ShortCut_2.grid(column=0, row=1, sticky="snew")
-        self.ShortCut_2.bind("<Enter>", ShortCut_2_Hover_Effect_Come)
-        self.ShortCut_2.bind("<Leave>", ShortCut_2_Hover_Effect_Leave)
+        self.ShortCut_2.bind("<Enter>", Checkbutton_Use_ShortCut_2_Hover_Effect_Come)
+        self.ShortCut_2.bind("<Leave>", Checkbutton_Use_ShortCut_2_Hover_Effect_Leave)
 
         # Label shortcut2
         self.ShortCut_Place_2 = tk.Label(self.Shortcut_Frame, borderwidth=1, relief="solid",
-                                         textvariable=self.text_shortcut2)
+                                         textvariable=self.label_combination_shortcut2)
         self.ShortCut_Place_2.configure(
             background="#ffffff", state="normal", width=26)
         self.ShortCut_Place_2.grid(column=1, row=1, sticky="ew")
@@ -178,11 +188,11 @@ class SettingWindow:
         # Button record shortcut2
         def cmd_Record_ShortCut_2():
             if not self.in_read_shortcut2_mode:
-                self.text_shortcut2.set("")
-                self.text_button2_mode.set("Done")
+                self.label_combination_shortcut2.set("")
+                self.button_record_mode_shortcut2.set("Done")
                 self.in_read_shortcut2_mode = True
             else:
-                self.text_button2_mode.set("Record")
+                self.button_record_mode_shortcut2.set("Record")
                 self.in_read_shortcut2_mode = False
 
         def Record_ShortCut_2_Hover_Effect_Come(_):
@@ -191,7 +201,7 @@ class SettingWindow:
         def Record_ShortCut_2_Hover_Effect_Leave(_):
             self.Record_ShortCut_2["bg"] = "#ecf0f1"
 
-        self.Record_ShortCut_2 = tk.Button(self.Shortcut_Frame, textvariable=self.text_button2_mode)
+        self.Record_ShortCut_2 = tk.Button(self.Shortcut_Frame, textvariable=self.button_record_mode_shortcut2)
         self.Record_ShortCut_2.configure(background="#ecf0f1", default="active", font="{g} 10 ",
                                          command=cmd_Record_ShortCut_2, width=8)
         self.Record_ShortCut_2.grid(column=2, padx=5, pady=5, row=1, sticky="ew")
@@ -316,15 +326,7 @@ class SettingWindow:
         self.main_window.mainloop()
 
 
-# Set up config
-def read_config():
-    # ---- (read option from file) ---
-    with open(f'{ROOT_PATH}/data/setup/setup.json', 'r', encoding='utf-8') as file:
-        config_ = json.load(file)
-    return config_
-
-
-def config_startup(on):
+def config_startup_using_shortcut(on):
     shortcut_dir = r'C:\Users\%s\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup' % USER_NAME
     shortcut_path = os.path.join(shortcut_dir, "q-cropper.lnk")  # custom deployed app name
     # C:\Users\LENOVO\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\q-cropper.lnk
@@ -345,32 +347,17 @@ def config_startup(on):
             os.remove(shortcut_path)
 
 
-config = read_config()
-# config_startup(config["start_at_startup"][0])  # only for deployed app
-
-
-# stray configuration
-def stray_on_clicked(icon_, item):
-    if str(item) == "Setting":
-        if not setting_is_activating:
-            setting_section()
-    elif str(item) == "New cut 1":
-        crop_section1()
-    elif str(item) == "New cut 2":
-        crop_section2()
-    elif str(item) == "Exit":
-        icon_.stop()
-        exit()
-
-
-app_icon_path = f"{ROOT_PATH}/data/app image/app_icon.ico"
-app_icon = PIL.Image.open(app_icon_path)
-icon = pystray.Icon("Q_snip", app_icon, menu=pystray.Menu(
-    pystray.MenuItem("Setting", stray_on_clicked),
-    pystray.MenuItem("New cut 1", stray_on_clicked),
-    pystray.MenuItem("New cut 2", stray_on_clicked),
-    pystray.MenuItem("Exit", stray_on_clicked),
-))
+def config_startup_using_batch(on):
+    if on:
+        file_path = ROOT_PATH + "//q-cropper.exe"
+        bat_path = r'C:\Users\%s\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup' % USER_NAME
+        with open(bat_path + '\\' + "open_q-cropper.bat", "w") as bat_file:
+            bat_file.write(r'start "" "%s"' % file_path)
+    else:
+        ROOT_PATH + "//main.py"
+        bat_path = r'C:\Users\%s\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup' % USER_NAME
+        with open(bat_path + '\\' + "open_snipper.bat", "w") as bat_file:
+            bat_file.write("")
 
 
 def crop_section1():
@@ -429,7 +416,7 @@ def read_shortcut_from_config():
 shortcut_to_function = read_shortcut_from_config()
 
 
-def convert_vk_to_string(shortcut):
+def convert_vk_pynput_to_string(shortcut):
     map_to_string = {162: "Ctrl", 160: "Shift", 164: "Alt"}
     string_shortcut = [map_to_string.get(key, chr(key)) for key in shortcut]
     return " + ".join(string_shortcut)
@@ -459,8 +446,8 @@ def setting_section():
     app = SettingWindow()
     # read start state
     app.button_OK_is_clicked.set(0)
-    app.text_shortcut1.set(convert_vk_to_string([int(vk) for vk in config["shortcut_to_snip1"]]))
-    app.text_shortcut2.set(convert_vk_to_string([int(vk) for vk in config["shortcut_to_snip2"]]))
+    app.label_combination_shortcut1.set(convert_vk_pynput_to_string([int(vk) for vk in config["shortcut_to_snip1"]]))
+    app.label_combination_shortcut2.set(convert_vk_pynput_to_string([int(vk) for vk in config["shortcut_to_snip2"]]))
     app.checkbutton_use_shortcut1.set(config["use_shortcut1"][0])
     app.checkbutton_use_shortcut2.set(config["use_shortcut2"][0])
     app.checkbutton_start_with_window.set(config["start_at_startup"][0])
@@ -472,8 +459,8 @@ def setting_section():
     app.run()  # init n mainloop
 
     if app.button_OK_is_clicked.get():
-        config["shortcut_to_snip1"] = convert_string_to_vk(app.text_shortcut1.get())
-        config["shortcut_to_snip2"] = convert_string_to_vk(app.text_shortcut2.get())
+        config["shortcut_to_snip1"] = convert_string_to_vk(app.label_combination_shortcut1.get())
+        config["shortcut_to_snip2"] = convert_string_to_vk(app.label_combination_shortcut2.get())
         config["options_on_snip1"] = [app.method1_to_process_shortcut1.get(), app.method2_to_process_shortcut1.get()]
         config["options_on_snip2"] = [app.method1_to_process_shortcut2.get(), app.method2_to_process_shortcut2.get()]
         config["use_shortcut1"] = [app.checkbutton_use_shortcut1.get()]
@@ -495,7 +482,29 @@ def setting_section():
     setting_is_activating = False
 
 
-# The currently pressed keys (initially empty)
+# stray configuration
+def stray_on_clicked(icon_, item):
+    if str(item) == "Setting":
+        if not setting_is_activating:
+            setting_section()
+    elif str(item) == "New cut 1":
+        crop_section1()
+    elif str(item) == "New cut 2":
+        crop_section2()
+    elif str(item) == "Exit":
+        icon_.stop()
+        exit()
+
+
+app_icon_path = f"{ROOT_PATH}/data/app image/app_icon.ico"
+app_icon = PIL.Image.open(app_icon_path)
+icon = pystray.Icon("Q_snip", app_icon, menu=pystray.Menu(
+    pystray.MenuItem("Setting", stray_on_clicked),
+    pystray.MenuItem("New cut 1", stray_on_clicked),
+    pystray.MenuItem("New cut 2", stray_on_clicked),
+    pystray.MenuItem("Exit", stray_on_clicked),
+))
+
 pressed_vks = set()
 
 

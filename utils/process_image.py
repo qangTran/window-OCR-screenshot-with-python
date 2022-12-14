@@ -1,9 +1,12 @@
 import os
+
 import cv2
 import easyocr
 import numpy as np
 import pyautogui  # take a screenshot
 import torch
+import win32con
+import win32gui
 from screeninfo import get_monitors
 
 reader = easyocr.Reader(['vi', 'en'], gpu=torch.cuda.is_available(), verbose=False)
@@ -106,9 +109,13 @@ class Cropper:
         # cv2.namedWindow('Crop Window')
         # set as fullscreen
         cv2.namedWindow("Snip Window", cv2.WND_PROP_FULLSCREEN)
+        cv2.setWindowProperty("Snip Window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_NORMAL)
+        cv2.waitKey(1)
         cv2.setWindowProperty("Snip Window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-
         cv2.setMouseCallback('Snip Window', self.draw_rectangle_callback)
+        hWnd = win32gui.FindWindow(None, 'Snip Window')
+        win32gui.SetWindowPos(hWnd, win32con.HWND_TOPMOST, 0, 0, 0, 0,
+                              win32con.SWP_SHOWWINDOW | win32con.SWP_NOSIZE | win32con.SWP_NOMOVE)
         while True:
             cv2.imshow('Snip Window', self.canvas_img)
             if cv2.waitKey(20) and 0xFF == ord('q') or self.cropped:
@@ -118,47 +125,21 @@ class Cropper:
         return
 
 
-def image_to_gray(img):
+def convert_image_to_gray(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    GrayImg = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-    return img, GrayImg
+    gray_img = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+    return gray_img
 
 
-def dilate_image(mask):
+def get_dilate(img):
+    gray_img = convert_image_to_gray(img)
     kernel_length = 30
     horizontal_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_length, 1))
-    dilate = cv2.dilate(mask, horizontal_kernel, iterations=1)
+    dilate = cv2.dilate(gray_img, horizontal_kernel, iterations=1)
     return dilate
 
 
-def process_image(img):
-    img, GrayImg = image_to_gray(img)
-    dilate = dilate_image(GrayImg)
-    return img, dilate
-
-
-def create_bounding_box_by_line(img):
-    if find_black_background(img):
-        _, temp = image_to_gray(img)
-        cv2.imwrite(f"{os.path.realpath(os.path.dirname(__file__))}/../data/app image/temp_process.png", temp)
-        new_image_path = f"{os.path.realpath(os.path.dirname(__file__))}/../data/app image/temp_process.png"
-        img = cv2.imread(new_image_path)
-    img, dilate = process_image(img)
-    img2 = img.copy()
-    contours = cv2.findContours(dilate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    contours = contours[0] if len(contours) == 2 else contours[1]
-    rect = []
-    for c in contours:
-        x, y, w, h = cv2.boundingRect(c)
-        rect.append(cv2.boundingRect(c))
-        img2 = cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        crop_img = img[y:y + w, x:x + h]
-
-    return img2, rect
-
-
-def find_black_background(img, threshold=0.3):
-    """remove images with transparent or white background"""
+def is_black_background_image(img, threshold=0.3):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     lower_black = np.array([0, 0, 0])
     upper_black = np.array([180, 255, 85])
@@ -170,13 +151,47 @@ def find_black_background(img, threshold=0.3):
         return False
 
 
+def get_rect(img):
+    copy_image = img.copy()
+
+    # if image has black background, convert it to white background
+    if is_black_background_image(img):
+        gray_image = convert_image_to_gray(img)
+        # reset after mess up
+        cv2.imwrite(f"{os.path.realpath(os.path.dirname(__file__))}/../data/app image/temp_process.png", gray_image)
+        new_image_path = f"{os.path.realpath(os.path.dirname(__file__))}/../data/app image/temp_process.png"
+        copy_image = cv2.imread(new_image_path)
+
+    dilate = get_dilate(copy_image)
+
+    contours = cv2.findContours(dilate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = contours[0] if len(contours) == 2 else contours[1]
+    rect = [tuple(cv2.boundingRect(c)) for c in contours]
+
+    return rect
+
+
 def image_to_text(img):
     origin_image = img.copy()
 
-    _, rect = create_bounding_box_by_line(img)
+    rect = get_rect(img)
 
-    rect = sorted(rect, key=lambda x: (x[1], x))
-    results = []
+    rect = sorted(rect, key=lambda z: (z[1], z))
+
+    len_rect = len(rect)
+    for i, r in enumerate(rect):
+        x, y, w, h = r
+        padding = round(h / 4)
+        vertical_range = (y - padding, y + h + padding)
+        next_i = i + 1
+        while True and next_i < len_rect:
+            if rect[next_i][1] >= vertical_range[0] and rect[next_i][1] + rect[next_i][3] <= vertical_range[1]:
+                next_i = next_i + 1
+            else:
+                break
+        rect[i:next_i-1] = sorted(rect[i:next_i-1],  key=lambda z: (z[0], z))
+
+    results = list()
 
     image_height, image_width, _ = origin_image.shape
 
@@ -198,12 +213,18 @@ def image_to_text(img):
         if end_y > image_height:
             end_y = image_height
         if end_x > image_width:
-            end_y = image_width
+            end_x = image_width
 
         crop_img = origin_image[start_y:end_y, start_x:end_x]
+        #
+        # cv2.imshow("test", crop_img)
+        # cv2.waitKey(0)
 
-        temp = reader.readtext(crop_img, detail=0, paragraph=True, y_ths=1, x_ths=100)
-        results = results + temp
+        temp = reader.readtext(crop_img, detail=0, paragraph=True, y_ths=-0.2, x_ths=500)
+        if len(temp) > 0:
+            temp = " ".join(temp)
+            results.append(temp)
+
     return results
 
 
@@ -218,8 +239,6 @@ def crop():
     cropper = Cropper(raw_img)
     start, end = cropper.get_start_end()
 
-    # print(f"startx, start_y = {start}")
-    # print(f"endx, endy = {end}")
     start_x, start_y = start
     end_x, end_y = end
 
