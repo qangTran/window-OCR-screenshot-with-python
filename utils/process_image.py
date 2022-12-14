@@ -231,7 +231,7 @@ def image_to_text(img):
 def crop():
     # print("Start snip ...")
 
-    image_path = f"{os.path.realpath(os.path.dirname(__file__))}/../data/app image/test1.png"
+    image_path = f"{os.path.realpath(os.path.dirname(__file__))}/../data/app image/cropped_image.png"
     # crop image from screen
     raw_img = pyautogui.screenshot().convert('RGB')
 
