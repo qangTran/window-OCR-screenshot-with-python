@@ -348,16 +348,14 @@ def config_startup_using_shortcut(on):
 
 
 def config_startup_using_batch(on):
+    file_path = ROOT_PATH + "//q-cropper.exe"
+    batch_path = r'C:\Users\%s\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\q-cropper.bat' % USER_NAME
     if on:
-        file_path = ROOT_PATH + "//q-cropper.exe"
-        bat_path = r'C:\Users\%s\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup' % USER_NAME
-        with open(bat_path + '\\' + "open_q-cropper.bat", "w") as bat_file:
-            bat_file.write(r'start "" "%s"' % file_path)
+        with open(batch_path, "w") as bat_file:
+            bat_file.write(r'start "%s"' % file_path)
     else:
-        ROOT_PATH + "//main.py"
-        bat_path = r'C:\Users\%s\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup' % USER_NAME
-        with open(bat_path + '\\' + "open_snipper.bat", "w") as bat_file:
-            bat_file.write("")
+        if os.path.isfile(batch_path):
+            os.remove(batch_path)
 
 
 def crop_section1():
@@ -477,7 +475,7 @@ def setting_section():
     shortcut_to_function = read_shortcut_from_config()
 
     # only for deployed app
-    # config_startup(on=config["start_at_startup"][0])
+    config_startup_using_shortcut(on=config["start_at_startup"][0])
 
     setting_is_activating = False
 

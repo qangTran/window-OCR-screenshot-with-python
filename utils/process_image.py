@@ -125,107 +125,38 @@ class Cropper:
         return
 
 
-def convert_image_to_gray(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray_img = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-    return gray_img
-
-
-def get_dilate(img):
-    gray_img = convert_image_to_gray(img)
-    kernel_length = 30
-    horizontal_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_length, 1))
-    dilate = cv2.dilate(gray_img, horizontal_kernel, iterations=1)
-    return dilate
-
-
-def is_black_background_image(img, threshold=0.3):
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    lower_black = np.array([0, 0, 0])
-    upper_black = np.array([180, 255, 85])
-    percent = (cv2.inRange(hsv, lower_black, upper_black)).sum() / img.size
-    percent = percent / 100
-    if percent >= threshold:
-        return True
-    else:
-        return False
-
-
-def get_rect(img):
-    copy_image = img.copy()
-
-    # if image has black background, convert it to white background
-    if is_black_background_image(img):
-        gray_image = convert_image_to_gray(img)
-        # reset after mess up
-        cv2.imwrite(f"{os.path.realpath(os.path.dirname(__file__))}/../data/app image/temp_process.png", gray_image)
-        new_image_path = f"{os.path.realpath(os.path.dirname(__file__))}/../data/app image/temp_process.png"
-        copy_image = cv2.imread(new_image_path)
-
-    dilate = get_dilate(copy_image)
-
-    contours = cv2.findContours(dilate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    contours = contours[0] if len(contours) == 2 else contours[1]
-    rect = [tuple(cv2.boundingRect(c)) for c in contours]
-
-    return rect
-
-
 def image_to_text(img):
-    origin_image = img.copy()
+    ocr_results = reader.readtext(img, paragraph=True, y_ths=-0.2, x_ths=500)
 
-    rect = get_rect(img)
+    # sort by y position
+    ocr_results = sorted(ocr_results, key=lambda z: z[0][0][1])
 
-    rect = sorted(rect, key=lambda z: (z[1], z))
+    # detect by line
+    len_result = len(ocr_results)
+    line_mark = list()
+    i = 0
 
-    len_rect = len(rect)
-    for i, r in enumerate(rect):
-        x, y, w, h = r
-        padding = round(h / 4)
-        vertical_range = (y - padding, y + h + padding)
+    while i < len_result:
+        upper_y = ocr_results[i][0][0][1]
+        lower_y = ocr_results[i][0][2][1]
         next_i = i + 1
-        while True and next_i < len_rect:
-            if rect[next_i][1] >= vertical_range[0] and rect[next_i][1] + rect[next_i][3] <= vertical_range[1]:
-                next_i = next_i + 1
-            else:
-                break
-        rect[i:next_i-1] = sorted(rect[i:next_i-1],  key=lambda z: (z[0], z))
+        if next_i < len_result:
+            lower_threshold = lower_y + round(
+                ((lower_y - upper_y) + (ocr_results[next_i][0][2][1] - ocr_results[next_i][0][0][1])) / 8)
+            while next_i < len_result:
+                next_lower_y = ocr_results[next_i][0][2][1]
+                if next_lower_y <= lower_threshold:
+                    next_i = next_i + 1
+                else:
+                    break
+        # sort by line
+        ocr_results[i:next_i] = sorted(ocr_results[i:next_i], key=lambda z: z[0][0][0])
+        line_mark.append((i, next_i))
+        i = next_i
 
-    results = list()
-
-    image_height, image_width, _ = origin_image.shape
-
-    for r in range(len(rect)):
-        x, y, w, h = rect[r]
-
-        # add padding
-        padding = round(h / 5)
-
-        start_y = y - padding
-        end_y = y + h + padding
-        start_x = x - padding
-        end_x = x + w + padding
-
-        if start_y < 0:
-            start_y = 0
-        if start_x < 0:
-            start_x = 0
-        if end_y > image_height:
-            end_y = image_height
-        if end_x > image_width:
-            end_x = image_width
-
-        crop_img = origin_image[start_y:end_y, start_x:end_x]
-        #
-        # cv2.imshow("test", crop_img)
-        # cv2.waitKey(0)
-
-        temp = reader.readtext(crop_img, detail=0, paragraph=True, y_ths=-0.2, x_ths=500)
-        if len(temp) > 0:
-            temp = " ".join(temp)
-            results.append(temp)
-
-    return results
+    text_result = [i[1] for i in ocr_results]
+    last_result = [" ".join(text_result[i:j]) for i, j in line_mark]
+    return last_result
 
 
 def crop():
@@ -254,6 +185,8 @@ def crop():
     if start_x != end_x and start_y != end_y:
         raw_img = raw_img[start_y:end_y, start_x:end_x, :]
         cv2.imwrite(image_path, raw_img)
+        cv2.imwrite(r"D:\OneDrive - VNU-HCMUS\H - Tech\Code\test ocr and normal default text\cropped_image.png",
+                    raw_img)  # qtest
     else:
         return None
 
