@@ -36,7 +36,7 @@ class SettingWindow:
 
         self.main_window = tk.Tk() if master is None else tk.Toplevel(master)
         self.main_window.focus_force()
-        self.main_window.title("Q-cropper")
+        self.main_window.title("OCR-S")
         self.main_window.configure(background="#f5f6fa")
         self.main_window.geometry("640x390+500+300")
         self.main_window['padx'] = self.main_window_padding_size
@@ -115,9 +115,9 @@ class SettingWindow:
             self.ShortCut_1.config(selectcolor="SystemButtonFace")
 
         self.ShortCut_1 = tk.Checkbutton(self.Shortcut_Frame, variable=self.checkbutton_use_shortcut1, onvalue=1,
-                                         offvalue=0)
+                                         offvalue=0, )
         self.ShortCut_1.configure(background="#f5f6fa", text='Shortcut 1', font="{g} 11 ", )
-        self.ShortCut_1.grid(column=0, row=0, sticky="snew")
+        self.ShortCut_1.grid(column=0, row=0, sticky="snew", ipadx=10)
         self.ShortCut_1.bind("<Enter>", Checkbutton_Use_ShortCut_1_Hover_Effect_Come)
         self.ShortCut_1.bind("<Leave>", Checkbutton_Use_ShortCut_1_Hover_Effect_Leave)
 
@@ -174,7 +174,7 @@ class SettingWindow:
         self.ShortCut_2 = tk.Checkbutton(self.Shortcut_Frame, variable=self.checkbutton_use_shortcut2, onvalue=1,
                                          offvalue=0)
         self.ShortCut_2.configure(background="#f5f6fa", text='Shortcut 2', font="{g} 11 ")
-        self.ShortCut_2.grid(column=0, row=1, sticky="snew")
+        self.ShortCut_2.grid(column=0, row=1, sticky="snew", ipadx=10)
         self.ShortCut_2.bind("<Enter>", Checkbutton_Use_ShortCut_2_Hover_Effect_Come)
         self.ShortCut_2.bind("<Leave>", Checkbutton_Use_ShortCut_2_Hover_Effect_Leave)
 
@@ -330,18 +330,19 @@ def config_startup_using_shortcut(on):
     shortcut_dir = r'C:\Users\%s\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup' % USER_NAME
     shortcut_path = os.path.join(shortcut_dir, "q-cropper.lnk")  # custom deployed app name
     # C:\Users\LENOVO\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\q-cropper.lnk
-
+    current_file_name = os.path.basename(__file__)
     if on:
-        # test get file path of output program later as `target`
-        target = ROOT_PATH + "//q-cropper.exe"  # custom name of deployed app
-        wDir = ROOT_PATH
-        _icon = ROOT_PATH + "//q-cropper.exe"
-        shell = Dispatch('WScript.Shell')
-        shortcut = shell.CreateShortCut(shortcut_path)
-        shortcut.Targetpath = target
-        shortcut.WorkingDirectory = wDir
-        shortcut.IconLocation = _icon
-        shortcut.save()
+        if current_file_name[-3:] == "exe":
+            # test get file path of output program later as `target`
+            target = ROOT_PATH + f"//{current_file_name}"  # custom name of deployed app
+            wDir = ROOT_PATH
+            _icon = ROOT_PATH + f"//{current_file_name}"
+            shell = Dispatch('WScript.Shell')
+            shortcut = shell.CreateShortCut(shortcut_path)
+            shortcut.Targetpath = target
+            shortcut.WorkingDirectory = wDir
+            shortcut.IconLocation = _icon
+            shortcut.save()
     else:
         if os.path.isfile(shortcut_path):
             os.remove(shortcut_path)
