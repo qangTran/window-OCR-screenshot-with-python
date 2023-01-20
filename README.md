@@ -1,6 +1,7 @@
 # Window OCR screenshort Tool 
-The python application build specific for window to cut image from screenshot and convert it to text. Download windown app at [here](https://studenthcmusedu-my.sharepoint.com/:f:/g/personal/20280078_student_hcmus_edu_vn/EvxCRbBq9zdMszIQ7_thdM0BaxlogvN9xyuwgJF4TOJB3Q?e=YNiqfG)
+The python application build specific for window to cut image from screenshot and convert it to text. Download windown app at [here](https://studenthcmusedu-my.sharepoint.com/:f:/g/personal/20280078_student_hcmus_edu_vn/EvxCRbBq9zdMszIQ7_thdM0BaxlogvN9xyuwgJF4TOJB3Q?e=YNiqfG).
 
+![](./demo/setting-interface.png)
 # Fearture
 Crop image from screen, convert to text and copy to clipboard, support English and Vietnamese
 
@@ -26,6 +27,5 @@ Crop image from screen, convert to text and copy to clipboard, support English a
 # Run
 > python OCR-S.py
 
-# Demo
-![](./demo/setting-interface.png)
+
 
