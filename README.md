@@ -1,6 +1,5 @@
 # Window OCR screenshort Tool 
-A tool for cut image from screenshot with an interface.
-A mini project for learning Python 🤗
+The python application build specific for window to cut image from screenshot and convert it to text. Download windown app at [here](https://studenthcmusedu-my.sharepoint.com/:f:/g/personal/20280078_student_hcmus_edu_vn/EvxCRbBq9zdMszIQ7_thdM0BaxlogvN9xyuwgJF4TOJB3Q?e=YNiqfG)
 
 # Fearture
 Crop image from screen, convert to text and copy to clipboard, support English and Vietnamese
@@ -19,13 +18,13 @@ Crop image from screen, convert to text and copy to clipboard, support English a
 - win10toast==0.9
 
 
-**For desktop**
+**For desktop environment**
 > pip uninstall opencv-python-headless
 >
 > pip install opencv-python==4.6.0.66
 
 # Run
-> python q-cropper.py
+> python OCR-S.py
 
 # Demo
 ![](./demo/setting-interface.png)
