@@ -328,21 +328,20 @@ class SettingWindow:
 
 def config_startup_using_shortcut(on):
     shortcut_dir = r'C:\Users\%s\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup' % USER_NAME
-    shortcut_path = os.path.join(shortcut_dir, "q-cropper.lnk")  # custom deployed app name
+    shortcut_path = os.path.join(shortcut_dir, "OCR-S.lnk")  # custom deployed app name
     # C:\Users\LENOVO\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\q-cropper.lnk
-    current_file_name = os.path.basename(__file__)
+
     if on:
-        if current_file_name[-3:] == "exe":
-            # test get file path of output program later as `target`
-            target = ROOT_PATH + f"//{current_file_name}"  # custom name of deployed app
-            wDir = ROOT_PATH
-            _icon = ROOT_PATH + f"//{current_file_name}"
-            shell = Dispatch('WScript.Shell')
-            shortcut = shell.CreateShortCut(shortcut_path)
-            shortcut.Targetpath = target
-            shortcut.WorkingDirectory = wDir
-            shortcut.IconLocation = _icon
-            shortcut.save()
+        # test get file path of output program later as `target`
+        target = ROOT_PATH + "//OCR-S.exe"  # custom name of deployed app
+        wDir = ROOT_PATH
+        _icon = ROOT_PATH + "//OCR-S.exe"
+        shell = Dispatch('WScript.Shell')
+        shortcut = shell.CreateShortCut(shortcut_path)
+        shortcut.Targetpath = target
+        shortcut.WorkingDirectory = wDir
+        shortcut.IconLocation = _icon
+        shortcut.save()
     else:
         if os.path.isfile(shortcut_path):
             os.remove(shortcut_path)
@@ -475,7 +474,6 @@ def setting_section():
     # re-activate listener shortcut
     shortcut_to_function = read_shortcut_from_config()
 
-    # only for deployed app
     config_startup_using_shortcut(on=config["start_at_startup"][0])
 
     setting_is_activating = False

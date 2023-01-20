@@ -126,7 +126,30 @@ class Cropper:
 
 
 def image_to_text(img):
-    ocr_results = reader.readtext(img, paragraph=True, y_ths=-0.2, x_ths=500)
+    # ocr_results = reader.readtext(img, paragraph=True, y_ths=-0.2, x_ths=500) # best for Phu's Ver
+
+    ocr_results = reader.readtext(img, paragraph=False)
+
+    # print bounding box
+    # for i in ocr_results:
+    #     print(i)
+    # for (bbox, text, _) in ocr_results:
+    #     # Define bounding boxes
+    #     (tl, tr, br, bl) = bbox
+    #     tl = (int(tl[0]), int(tl[1]))
+    #     tr = (int(tr[0]), int(tr[1]))
+    #     br = (int(br[0]), int(br[1]))
+    #     bl = (int(bl[0]), int(bl[1]))
+    #
+    #     # Remove non-ASCII characters to display clean text on the image (using opencv)
+    #     text = "".join([c if ord(c) < 128 else "" for c in text]).strip()
+    #
+    #     # Put rectangles and text on the image
+    #     cv2.rectangle(img, tl, br, (0, 255, 0), 2)
+    #     # cv2.putText(img, text, (tl[0], tl[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+    # # show the output image
+    # cv2.imshow("Image", img)
+    # cv2.waitKey(0)
 
     # sort by y position
     ocr_results = sorted(ocr_results, key=lambda z: z[0][0][1])
@@ -186,14 +209,35 @@ def crop():
         raw_img = raw_img[start_y:end_y, start_x:end_x, :]
         cv2.imwrite(image_path, raw_img)
         cv2.imwrite(r"D:\OneDrive - VNU-HCMUS\H - Tech\Code\test ocr and normal default text\cropped_image.png",
-                    raw_img)  # qtest
+                    raw_img)
     else:
         return None
 
     # OCR
     results = image_to_text(raw_img)
 
+    # for i in results:
+    #     print(i)
+
     if results:
         return "\n".join(results)
     else:
         return None
+
+
+def test_single_image():
+    ###############
+    raw_img = cv2.imread('../data/app image/cropped_image.png')
+    ###############
+    # cv2.imshow('image',raw_img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    print(type(raw_img))
+    # OCR
+    results = image_to_text(raw_img)
+    for i in results:
+        print(i)
+
+
+if __name__ == "__main__":
+    test_single_image()
