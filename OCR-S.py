@@ -68,6 +68,7 @@ class SettingWindow:
         self.options = sorted(list(process_text.available_options.keys()))
 
         def key_down(key):
+            """support record new shortcut"""
             if self.in_read_shortcut1_mode:
                 string_key = convert_vk_tkinter_to_string(key)
                 if string_key in self.label_combination_shortcut1.get().split(" + "):
@@ -108,18 +109,18 @@ class SettingWindow:
         # Record shortcut 1
 
         # Check button use shortcut1
-        def Checkbutton_Use_ShortCut_1_Hover_Effect_Come(_):
+        def checkbutton_use_shortcut_1_hover_effect_come(_):
             self.ShortCut_1.config(selectcolor="#d2dae2")
 
-        def Checkbutton_Use_ShortCut_1_Hover_Effect_Leave(_):
+        def checkbutton_use_shortcut_1_hover_effect_leave(_):
             self.ShortCut_1.config(selectcolor="SystemButtonFace")
 
         self.ShortCut_1 = tk.Checkbutton(self.Shortcut_Frame, variable=self.checkbutton_use_shortcut1, onvalue=1,
                                          offvalue=0, )
         self.ShortCut_1.configure(background="#f5f6fa", text='Shortcut 1', font="{g} 11 ", )
         self.ShortCut_1.grid(column=0, row=0, sticky="snew", ipadx=10)
-        self.ShortCut_1.bind("<Enter>", Checkbutton_Use_ShortCut_1_Hover_Effect_Come)
-        self.ShortCut_1.bind("<Leave>", Checkbutton_Use_ShortCut_1_Hover_Effect_Leave)
+        self.ShortCut_1.bind("<Enter>", checkbutton_use_shortcut_1_hover_effect_come)
+        self.ShortCut_1.bind("<Leave>", checkbutton_use_shortcut_1_hover_effect_leave)
 
         # Label shortcut2
         self.ShortCut_Place_1 = tk.Label(self.Shortcut_Frame, borderwidth=1, relief="solid",
@@ -129,7 +130,7 @@ class SettingWindow:
         self.ShortCut_Place_1.grid(column=1, padx=2, row=0, sticky="ew")
 
         # Button Record ShortCut1
-        def cmd_Record_ShortCut_1():
+        def cmd_record_shortcut_1():
             if not self.in_read_shortcut1_mode:
                 self.label_combination_shortcut1.set("")
                 self.button_record_mode_shortcut1.set("Done")
@@ -138,19 +139,19 @@ class SettingWindow:
                 self.button_record_mode_shortcut1.set("Record")
                 self.in_read_shortcut1_mode = False
 
-        def Record_ShortCut_1_Hover_Effect_Come(_):
+        def record_shortcut_1_hover_effect_come(_):
             self.Record_ShortCut_1["bg"] = "#bdc3c7"
 
-        def Record_ShortCut_1_Hover_Effect_Leave(_):
+        def record_shortcut_1_hover_effect_leave(_):
             self.Record_ShortCut_1["bg"] = "#ecf0f1"
 
         self.Record_ShortCut_1 = tk.Button(self.Shortcut_Frame, textvariable=self.button_record_mode_shortcut1)
         self.Record_ShortCut_1.configure(background="#ecf0f1", default="active", font="{g} 10 ",
-                                         command=cmd_Record_ShortCut_1, width=8)
+                                         command=cmd_record_shortcut_1, width=8)
         self.Record_ShortCut_1.grid(column=2, padx=5, pady=5, row=0, sticky="ew")
 
-        self.Record_ShortCut_1.bind("<Enter>", Record_ShortCut_1_Hover_Effect_Come)
-        self.Record_ShortCut_1.bind("<Leave>", Record_ShortCut_1_Hover_Effect_Leave)
+        self.Record_ShortCut_1.bind("<Enter>", record_shortcut_1_hover_effect_come)
+        self.Record_ShortCut_1.bind("<Leave>", record_shortcut_1_hover_effect_leave)
 
         # Option1 for shortcut1
         self.Option_Shortcut_1 = tk.OptionMenu(self.Shortcut_Frame, self.method1_to_process_shortcut1, *self.options)
@@ -165,18 +166,18 @@ class SettingWindow:
         # Record ShortCut 2
 
         # Check button shortcut 2
-        def Checkbutton_Use_ShortCut_2_Hover_Effect_Come(_):
+        def checkbutton_use_shortcut_2_hover_effect_come(_):
             self.ShortCut_2.config(selectcolor="#d2dae2")
 
-        def Checkbutton_Use_ShortCut_2_Hover_Effect_Leave(_):
+        def checkbutton_use_shortcut_2_hover_effect_leave(_):
             self.ShortCut_2.config(selectcolor="SystemButtonFace")
 
         self.ShortCut_2 = tk.Checkbutton(self.Shortcut_Frame, variable=self.checkbutton_use_shortcut2, onvalue=1,
                                          offvalue=0)
         self.ShortCut_2.configure(background="#f5f6fa", text='Shortcut 2', font="{g} 11 ")
         self.ShortCut_2.grid(column=0, row=1, sticky="snew", ipadx=10)
-        self.ShortCut_2.bind("<Enter>", Checkbutton_Use_ShortCut_2_Hover_Effect_Come)
-        self.ShortCut_2.bind("<Leave>", Checkbutton_Use_ShortCut_2_Hover_Effect_Leave)
+        self.ShortCut_2.bind("<Enter>", checkbutton_use_shortcut_2_hover_effect_come)
+        self.ShortCut_2.bind("<Leave>", checkbutton_use_shortcut_2_hover_effect_leave)
 
         # Label shortcut2
         self.ShortCut_Place_2 = tk.Label(self.Shortcut_Frame, borderwidth=1, relief="solid",
@@ -186,7 +187,7 @@ class SettingWindow:
         self.ShortCut_Place_2.grid(column=1, row=1, sticky="ew")
 
         # Button record shortcut2
-        def cmd_Record_ShortCut_2():
+        def cmd_record_shortcut_2():
             if not self.in_read_shortcut2_mode:
                 self.label_combination_shortcut2.set("")
                 self.button_record_mode_shortcut2.set("Done")
@@ -195,25 +196,25 @@ class SettingWindow:
                 self.button_record_mode_shortcut2.set("Record")
                 self.in_read_shortcut2_mode = False
 
-        def Record_ShortCut_2_Hover_Effect_Come(_):
+        def record_shortcut_2_hover_effect_come(_):
             self.Record_ShortCut_2["bg"] = "#bdc3c7"
 
-        def Record_ShortCut_2_Hover_Effect_Leave(_):
+        def record_shortcut_2_hover_effect_leave(_):
             self.Record_ShortCut_2["bg"] = "#ecf0f1"
 
         self.Record_ShortCut_2 = tk.Button(self.Shortcut_Frame, textvariable=self.button_record_mode_shortcut2)
         self.Record_ShortCut_2.configure(background="#ecf0f1", default="active", font="{g} 10 ",
-                                         command=cmd_Record_ShortCut_2, width=8)
+                                         command=cmd_record_shortcut_2, width=8)
         self.Record_ShortCut_2.grid(column=2, padx=5, pady=5, row=1, sticky="ew")
-        self.Record_ShortCut_2.bind("<Enter>", Record_ShortCut_2_Hover_Effect_Come)
-        self.Record_ShortCut_2.bind("<Leave>", Record_ShortCut_2_Hover_Effect_Leave)
+        self.Record_ShortCut_2.bind("<Enter>", record_shortcut_2_hover_effect_come)
+        self.Record_ShortCut_2.bind("<Leave>", record_shortcut_2_hover_effect_leave)
 
         # Option for shortcut2
         self.Option1_Shortcut_2 = tk.OptionMenu(self.Shortcut_Frame, self.method1_to_process_shortcut2, *self.options)
         self.Option1_Shortcut_2.config(width=8)
         self.Option1_Shortcut_2.grid(column=3, padx=(0, 5), row=1, sticky="ew")
 
-        # Option2 for shortcut1 **
+        # Option2 for shortcut1
         self.Option2_Shortcut_2 = tk.OptionMenu(self.Shortcut_Frame, self.method2_to_process_shortcut2, *self.options)
         self.Option2_Shortcut_2.config(width=8)
         self.Option2_Shortcut_2.grid(column=4, padx=(0, 5), row=1, sticky="ew")
@@ -233,10 +234,10 @@ class SettingWindow:
         self.System_Frame.grid_propagate(False)
 
         # Check button Start_At_Window
-        def Start_At_Window_Hover_Effect_Come(_):
+        def start_at_window_hover_effect_come(_):
             self.Start_At_Window.config(selectcolor="#d2dae2")
 
-        def Start_At_Window_Hover_Effect_Leave(_):
+        def start_at_window_hover_effect_leave(_):
             self.Start_At_Window.config(selectcolor="SystemButtonFace")
 
         self.Start_At_Window = tk.Checkbutton(self.System_Frame, variable=self.checkbutton_start_with_window, onvalue=1,
@@ -244,14 +245,14 @@ class SettingWindow:
         self.Start_At_Window.configure(
             background="#f5f6fa", text='Start with window', font="{g} 11 ", )
         self.Start_At_Window.grid(column=0, row=0, columnspan=3, padx=(3, 0), sticky="w")
-        self.Start_At_Window.bind("<Enter>", Start_At_Window_Hover_Effect_Come)
-        self.Start_At_Window.bind("<Leave>", Start_At_Window_Hover_Effect_Leave)
+        self.Start_At_Window.bind("<Enter>", start_at_window_hover_effect_come)
+        self.Start_At_Window.bind("<Leave>", start_at_window_hover_effect_leave)
 
         # Check button Show_Notification
-        def Show_Notification_Hover_Effect_Come(_):
+        def show_notification_hover_effect_come(_):
             self.Show_Notification.config(selectcolor="#d2dae2")
 
-        def Show_Notification_Hover_Effect_Leave(_):
+        def show_notification_hover_effect_leave(_):
             self.Show_Notification.config(selectcolor="SystemButtonFace", )
 
         self.Show_Notification = tk.Checkbutton(self.System_Frame, variable=self.checkbutton_show_notification,
@@ -259,8 +260,8 @@ class SettingWindow:
         self.Show_Notification.configure(background="#f5f6fa", text='Show notification after complete a cut',
                                          font="{g} 11 ", )
         self.Show_Notification.grid(column=0, row=1, columnspan=3, padx=(3, 0), sticky="w")
-        self.Show_Notification.bind("<Enter>", Show_Notification_Hover_Effect_Come)
-        self.Show_Notification.bind("<Leave>", Show_Notification_Hover_Effect_Leave)
+        self.Show_Notification.bind("<Enter>", show_notification_hover_effect_come)
+        self.Show_Notification.bind("<Leave>", show_notification_hover_effect_leave)
 
         # Button_Frame
         self.Button_Frame = tk.Frame(self.main_window)
@@ -269,58 +270,58 @@ class SettingWindow:
         self.Button_Frame.grid(column=0, row=2, sticky="e")
 
         # Help_Button
-        def Help_Button():
-            webbrowser.open_new("google.com")
+        def help_button():
+            webbrowser.open_new("https://www.facebook.com/Qangtran2002/")
 
-        def Help_Button_Hover_Effect_Come(_):
+        def help_button_hover_effect_come(_):
             self.Help_Button["bg"] = "#d4d4d4"
 
-        def Help_Button_Hover_Effect_Leave(_):
+        def help_button_hover_effect_leave(_):
             self.Help_Button["bg"] = "SystemButtonFace"
 
         self.Help_Button = tk.Button(self.Button_Frame)
         self.Help_Button.configure(default="active", font="{g} 10 {bold}", text='Help', width=10,
-                                   command=Help_Button)
+                                   command=help_button)
         self.Help_Button.grid(column=0, row=0, sticky="w")
-        self.Help_Button.bind("<Enter>", Help_Button_Hover_Effect_Come)
-        self.Help_Button.bind("<Leave>", Help_Button_Hover_Effect_Leave)
+        self.Help_Button.bind("<Enter>", help_button_hover_effect_come)
+        self.Help_Button.bind("<Leave>", help_button_hover_effect_leave)
 
         # Ok_Button
-        def Ok_Button():
+        def ok_button():
             self.button_OK_is_clicked.set(1)
             self.main_window.destroy()
 
-        def Ok_Button_Hover_Effect_Come(_):
+        def ok_button_hover_effect_come(_):
             self.Ok_Button["bg"] = "#d4d4d4"
 
-        def Ok_Button_Hover_Effect_Leave(_):
+        def ok_button_hover_effect_leave(_):
             self.Ok_Button["bg"] = "SystemButtonFace"
 
         self.Ok_Button = tk.Button(self.Button_Frame)
         self.Ok_Button.configure(default="active", font="{OK} 10 {bold}", foreground="#000000",
                                  highlightbackground="#000000", highlightcolor="#000000", text='OK', width=10,
-                                 command=Ok_Button)
+                                 command=ok_button)
         self.Ok_Button.grid(column=1, padx=15, pady=10, row=0)
-        self.Ok_Button.bind("<Enter>", Ok_Button_Hover_Effect_Come)
-        self.Ok_Button.bind("<Leave>", Ok_Button_Hover_Effect_Leave)
+        self.Ok_Button.bind("<Enter>", ok_button_hover_effect_come)
+        self.Ok_Button.bind("<Leave>", ok_button_hover_effect_leave)
 
         # Button Cancel
-        def Cancel_Button():
+        def cancel_button():
             self.main_window.destroy()
 
-        def Cancel_Button_Hover_Effect_Come(_):
+        def cancel_button_hover_effect_come(_):
             self.Cancel["bg"] = "#d4d4d4"
 
-        def Cancel_Button_Hover_Effect_Leave(_):
+        def cancel_button_hover_effect_leave(_):
             self.Cancel["bg"] = "SystemButtonFace"
 
         self.Cancel = tk.Button(self.Button_Frame)
         self.Cancel.configure(default="active", font="{Cancel} 10 {bold}", foreground="#000000",
                               highlightbackground="#000000", highlightcolor="#000000",
-                              text='Cancel', width=10, command=Cancel_Button)
+                              text='Cancel', width=10, command=cancel_button)
         self.Cancel.grid(column=2, row=0, padx=(0, 20))
-        self.Cancel.bind("<Enter>", Cancel_Button_Hover_Effect_Come)
-        self.Cancel.bind("<Leave>", Cancel_Button_Hover_Effect_Leave)
+        self.Cancel.bind("<Enter>", cancel_button_hover_effect_come)
+        self.Cancel.bind("<Leave>", cancel_button_hover_effect_leave)
 
     def run(self):
         self.main_window.mainloop()
@@ -368,9 +369,9 @@ def crop_section1():
     result = process_text.text_process(raw_text, config["options_on_snip1"][0])
     result = process_text.text_process(result, config["options_on_snip1"][1])
     # paste to clipboard
+
     pyperclip.copy(result)
     pyperclip.paste()
-
     if config["display_notification_after_cut"][0]:
         toaster.show_toast(f"Cropper 1: {', '.join(config['options_on_snip1'])}", result,
                            icon_path=f"{ROOT_PATH}/data/app image/app_icon.ico", duration=5, threaded=True)

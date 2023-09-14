@@ -9,7 +9,10 @@ pystray==0.19.4
 screeninfo==0.8.1
 torch==1.13.0
 win10toast==0.9
+googletrans==3.0.0a0
 
-# for desktop setup
+
+# For desktop setup, due to library conflicts, you may need to reinstall the library as following.
+# pip uninstall opencv-python
 # pip uninstall opencv-python-headless
 # pip install opencv-python==4.6.0.66

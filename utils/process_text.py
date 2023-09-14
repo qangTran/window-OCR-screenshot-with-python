@@ -1,4 +1,5 @@
 from autocorrect import Speller
+from googletrans import Translator
 
 
 def to_lower(text):
@@ -26,12 +27,23 @@ def no_endline(text: str):
     return text.replace("\n", " ")
 
 
+def capitalize(text):
+    return text.title()
+
+
+def translate(text):
+    translator = Translator()
+    return translator.translate(text, src='en', dest='vi').text
+
+
 available_options = {"to lower": to_lower,
                      "to upper": to_upper,
                      "autocorrect": autocorrect,
                      "raw text": raw_text,
                      "no endline": no_endline,
                      "no space": no_space,
+                     "translate": translate,
+                     "capitalize": capitalize,
                      }
 
 

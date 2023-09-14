@@ -1,4 +1,5 @@
 import os
+import os
 
 import cv2
 import easyocr
@@ -20,7 +21,6 @@ def get_screen_info() -> tuple:
 
 
 class Cropper:
-
     def __init__(self, img):
         self.ratio = 1.0  # saved ratio after cut
         self.screen_width, self.screen_height = get_screen_info()
@@ -129,7 +129,6 @@ def image_to_text(img):
     # ocr_results = reader.readtext(img, paragraph=True, y_ths=-0.2, x_ths=500) # best for Phu's Ver
 
     ocr_results = reader.readtext(img, paragraph=False)
-
     # print bounding box
     # for i in ocr_results:
     #     print(i)
@@ -218,7 +217,6 @@ def crop():
 
     # for i in results:
     #     print(i)
-
     if results:
         return "\n".join(results)
     else:
