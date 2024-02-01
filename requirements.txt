@@ -1,18 +1,17 @@
-autocorrect==2.6.1
 easyocr==1.6.2
 numpy==1.23.3
 Pillow==9.3.0
-PyAutoGUI==0.9.53
+PyAutoGUI==0.9.54
 pynput==1.7.6
 pyperclip==1.8.2
 pystray==0.19.4
 screeninfo==0.8.1
 torch==1.13.0
 win10toast==0.9
-googletrans==3.0.0a0
+googletrans==4.0.0rc1
 
 
-# For desktop setup, due to library conflicts, you may need to reinstall the library as following.
-# pip uninstall opencv-python
-# pip uninstall opencv-python-headless
+# For desktop setup, due to package conflicts, you may need to run these command after install above packages.
+# pip uninstall  opencv-python 
+# pip uninstall opencv-python-headless 
 # pip install opencv-python==4.6.0.66
